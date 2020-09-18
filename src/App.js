@@ -9,8 +9,8 @@ import { useDataLayerValue } from "./DataLayer";
 const spotify = new SpotifyWebApi();
 
 function App() {
-  const [token, setToken] = useState(null);
-  const [{}, dispatch] = useDataLayerValue();
+  //const [token, setToken] = useState(null);
+  const [{ user, token }, dispatch] = useDataLayerValue();
 
   // run code based on a given condition
   useEffect(() => {
@@ -20,20 +20,28 @@ function App() {
     const _token = hash.access_token;
 
     if(_token) {
-      setToken(_token);
+      dispatch({
+        type: "SET_TOKEN",
+        token: _token,
+      });
+     // setToken(_token);
       spotify.setAccessToken(_token);
-      spotify.getMe().then((user) => {
-        console.log("nidhi",user);
+      spotify.getMe().then((user) => { dispatch({
+          type: 'SET_USER',
+          user: user,
+        });
       });
     }
 
     console.log("i have", token);
   }, []);
+  //console.log("user...",user);
+  //console.log("token..",token);
   return (
     // BEM
     <div>
       {
-        token ? <Player /> : <Login />
+        token ? <Player spotify={spotify} /> : <Login />
       }
     </div>
   );
