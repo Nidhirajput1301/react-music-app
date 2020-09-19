@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import "./Footer.css";
+import { useDataLayerValue } from './DataLayer';
 import PlayCircleOutlineIcon from "@material-ui/icons/PlayCircleOutline";
 import SkipPreviousIcon from "@material-ui/icons/SkipPrevious";
 import SkipNextIcon from "@material-ui/icons/SkipNext";
@@ -10,22 +11,111 @@ import VolumeDownIcon from "@material-ui/icons/VolumeDown";
 import PlaylistPlayIcon from "@material-ui/icons/PlaylistPlay";
 import { Grid, Slider } from "@material-ui/core";
 
-function Footer() {
+
+function Footer({spotify}) {
+  const [{ token, item, playing }, dispatch] = useDataLayerValue();
+
+  useEffect(() => {
+    spotify.getMyCurrentPlaybackState().then((r) => {
+      console.log(r);
+
+      dispatch({
+        type: "SET_PLAYING",
+        playing: r.is_playing,
+      });
+
+      dispatch({
+        type: "SET_ITEM",
+        item: r.item,
+      });
+    });
+  }, [spotify]);
+
+  const handlePlayPause = () => {
+    if (playing) {
+      spotify.pause();
+      dispatch({
+        type: "SET_PLAYING",
+        playing: false,
+      });
+    } else {
+      spotify.play();
+      dispatch({
+        type: "SET_PLAYING",
+        playing: true,
+      });
+    }
+  };
+
+  const skipNext = () => {
+    spotify.skipToNext();
+    spotify.getMyCurrentPlayingTrack().then((r) => {
+      dispatch({
+        type: "SET_ITEM",
+        item: r.item,
+      });
+      dispatch({
+        type: "SET_PLAYING",
+        playing: true,
+      });
+    });
+  };
+
+  const skipPrevious = () => {
+    spotify.skipToPrevious();
+    spotify.getMyCurrentPlayingTrack().then((r) => {
+      dispatch({
+        type: "SET_ITEM",
+        item: r.item,
+      });
+      dispatch({
+        type: "SET_PLAYING",
+        playing: true,
+      });
+    });
+  };
+
   return (
     <div className="footer">
       <div className="footer_left">
-        <img className="footer_albumLogo" src="https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTFj_FD514f_CAQKXXiLo6pmjAgPovdXEJNoA&usqp=CAU" alt=""/>
-        <div className="footer_songInfo">
-          <h4>yeahh</h4>
-          <p>usher</p>
-        </div>
+        <img className="footer_albumLogo" src={item?.album.images[0].url} alt={item?.name}/>
+
+        {/* <div className="footer_songInfo">
+          <h4>{item.name}</h4>
+          <p>{item.artists.map((artist) => artist.name).join(", ")}</p>
+        </div> */}
+
+        {item ? (
+          <div className="footer_songInfo">
+            <h4>{item.name}</h4>
+            <p>{item.artists.map((artist) => artist.name).join(", ")}</p>
+          </div>
+        ) : (
+            <div className="footer_songInfo">
+              <h4>No song is playing</h4>
+              <p>...</p>
+            </div>
+          )}
+
       </div>
 
       <div className="footer_center">
         <ShuffleIcon className="footer_green" />
-        <SkipPreviousIcon className="footer_icon" />
-        <PlayCircleOutlineIcon fontSize="large" className="footer_icon"/>
-        <SkipNextIcon className="footer_icon" />
+        <SkipPreviousIcon className="footer_icon" onClick={skipNext} />
+        {playing ? (
+          <PauseCircleOutlineIcon
+            onClick={handlePlayPause}
+            fontSize="large"
+            className="footer_icon"
+          />
+        ) : (
+            <PlayCircleOutlineIcon
+              onClick={handlePlayPause}
+              fontSize="large"
+              className="footer_icon"
+            />
+          )}
+        <SkipNextIcon className="footer_icon" onClick={skipPrevious} />
         <RepeatIcon className="footer_green" />
       </div>
 
@@ -46,4 +136,4 @@ function Footer() {
   )
 }
 
-export default Footer
+export default Footer;
