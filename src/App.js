@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import './App.css';
 import Login from './Login';
 import { getTokenFromUrl } from './spotify';
@@ -17,7 +17,7 @@ function App() {
     // code...
     const hash = getTokenFromUrl();
     window.location.hash = "";
-    const _token = hash.access_token;
+    let _token = hash.access_token;
 
     if(_token) {
       // setToken(_token);

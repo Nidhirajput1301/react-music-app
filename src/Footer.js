@@ -78,12 +78,8 @@ function Footer({spotify}) {
   return (
     <div className="footer">
       <div className="footer_left">
-        <img className="footer_albumLogo" src={item?.album.images[0].url} alt={item?.name}/>
-
-        {/* <div className="footer_songInfo">
-          <h4>{item.name}</h4>
-          <p>{item.artists.map((artist) => artist.name).join(", ")}</p>
-        </div> */}
+        <img className="footer_albumLogo" src={item?.album.images[0].url} alt={item?.name}
+        />
 
         {item ? (
           <div className="footer_songInfo">
@@ -133,7 +129,7 @@ function Footer({spotify}) {
         </Grid>
       </div>
     </div>
-  )
+  );
 }
 
 export default Footer;

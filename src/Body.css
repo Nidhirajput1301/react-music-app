@@ -60,3 +60,13 @@
 .body_infoText > p {
   font-size: 14px;
 }
+
+.body_background {
+  position: absolute;
+  top: 13vh;
+  right: 0;
+  opacity: 0.4;
+  height: 80%;
+  width: 80%;
+  background-color: black;
+}
